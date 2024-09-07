@@ -1,0 +1,10 @@
+**Polymorph Help**
+
+*The polymorph alias is here to help you manage polymorph and true polymorph transformations for your game. It will perform the transormation part of the ability - the relevant spell should handle spell slots, saving throws etc*
+
+_Polymorph help and guidance__
+
+`{prefix}{alias} help` - show this help page
+`{prefix}{alias} <creature>` -  replace your existing character in init with the named creature carrying across all effects, spells etc.
+`{prefix}{alias} end` - end the polymorph and place your character back in init with all effects spells etc
+

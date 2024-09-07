@@ -1,0 +1,16 @@
+**Wildshape Help**
+
+*The wildshape alias is here to help you manage wildshape transformations for your druid. It will perform the transormation part of the ability - existing actions and notes should manage your known forms and uses of wildshape*
+
+__Wildshape help and guidance__
+
+`{prefix}{alias} help` - show this help page
+`{prefix}{alias} <beast>` -  replace your existing character in init with the named beast carrying across all effects, spells etc.
+`{prefix}{alias} end` - end the wildshape and place your character back in init with all effects spells etc
+
+__Limitations__
+
+The beast that will be added to initiative is the standard beast stat block with hit points and temporary hit points amended as per the PHB 2024 rules. The mental abilities of the druid are not carried across due to limitations in Avrae.
+
+To have the exact rules stat block with mental ability scores you can set up and use a homebrew version of the beast using `https://bestiarybuilder.com/`
+
