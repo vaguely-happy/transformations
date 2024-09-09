@@ -8,3 +8,12 @@ _Polymorph help and guidance__
 `{prefix}{alias} <creature>` -  replace your existing character in init with the named creature carrying across all effects, spells etc.
 `{prefix}{alias} end` - end the polymorph and place your character back in init with all effects spells etc
 
+Polymorph can also be used on other creatures in combat
+
+`{prefix}{alias} <creature> -t <target>` - replace the target in init with the named creature carrying across all effects, spells etc.
+`{prefix}{alias} end` - end the polymorph and place the original back in init with all effects spells etc
+
+If the polymorphed target is a player character then the player of that character must be the one to use `{prefix}{alias} end`
+fa12f642-47f7-48b4-8289-5d1a101be028	
+**Wildshape Help
+
