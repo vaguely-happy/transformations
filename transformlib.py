@@ -94,14 +94,23 @@ def applyPoly(cbt1, cbt2, args):
 		
 		
 def applyWildshape(cbt,args):
-	druidlevel = character().levels.get("Druid")
+	ch = character()
+	druidlevel = ch.levels.get("Druid")
+	subclassinfo = load_json(ch.get_cvar("subclass","{}"))
+	subclass = subclassinfo.get("DruidLevel","")	
+	wildthp = druidlevel
+	if subclass and "moon" in subclass.lower():
+		moonac = 13 + character().stats.get_mod("wisdom")
+		if moonac > cbt.ac:
+			cbt.set_ac(moonac)
+		wildthp = 3 * int(druidlevel)
 	druidhp = character().hp
 	druidmaxhp = character().max_hp
 	druidthp = character().temp_hp if character().temp_hp else 0
 	cbt.set_hp(druidhp)
 	cbt.set_maxhp(druidmaxhp)
-	if druidlevel > druidthp:
-		cbt.set_temp_hp(druidlevel)
+	if wildthp > druidthp:
+		cbt.set_temp_hp(wildthp)
 	else:
 		cbt.set_temp_hp(druidthp)
 
@@ -191,8 +200,7 @@ def transferEffects(cbt1, cbt2):
 			ch_cbt.remove_effect(child.name, strict = True)
 			ch_effect = ch_cbt.add_effect(name = child.name, duration = child.remaining, concentration = child.conc, parent = neweffect, desc=child.desc, passive_effects = passiveEffects(child), buttons=child.buttons, attacks=child.attacks)
 	
-				
-	
+
 def getMetadata(cbt):
 	c = combat()
 	name = cbt.name
