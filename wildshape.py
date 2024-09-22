@@ -9,23 +9,38 @@ c, cbt = combat(), None
 using(tf="92b005d9-e4e2-41fe-8ed8-0f0062adc668")
 if c:
 	cbt = tf.getCombatants(args)[0]
-	if not cbt:
+	if not cbt and not help:
 		return ctx.prefix + "echo Unable to locate target for wildshape " + "end" if isend else ""
-else:
+elif not help:
 	return ctx.prefix + "echo This alias is designed to help with initiative, you are not in initiative"
 if help:
 	helptext = get_gvar("fa12f642-47f7-48b4-8289-5d1a101be028").replace("{prefix}",ctx.prefix).replace("{alias}",ctx.alias)
 	returntext += f'''{ctx.prefix}embed -title "{name} Needs wildshape help" -desc "{helptext}" -footer "{ctx.prefix+ctx.alias} | by vaguely_happy" \n'''
 
+
 elif isend:
 	meta = tf.getMetadata(cbt)
 	revertname = meta.name if "name" in meta else ""
+	if c.current:
+		if c.current.name == cbt.name:
+			setcbt = revertname
+		else:
+			setcbt = c.current.name
+	else:
+		returntext += ctx.prefix + "init madd commoner -p 100 -name 'Pre-combat transformation' -hp -5" + "\n"
+		setcbt = "Pre-combat transformation"
+	if setcbt != cbt.name:
+		returntext += tf.moveInit(cbt.name) + "\n"   # this will protect the current from a false deletion
 	if revertname == character().name:
 		returntext += tf.resumeChar(cbt, args) + "\n"
-		returntext += ctx.prefix + "test {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.transferFromWildshape(tf.getCombatantByName('"+ cbt.name +"'), combat().me,[])}}{{'Transferring back to character'}}" + "\n"
-		if c.current.name == cbt.name:
-			returntext += tf.moveInit(revertname) + "\n"
-		returntext += tf.removeCbt(cbt, args) + "\n"
+		returntext += ctx.prefix + "tembed -title '{{name}} Is wildshaping' "
+		returntext += " -desc  {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.messageText(tf.getCombatantByName('" + cbt.name + "'), tf.getCombatantByName('" + revertname + "'),[])}} "
+		returntext += " -f {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.transferFromWildshape(tf.getCombatantByName('"+ cbt.name +"'), combat().me,[])}} "
+		returntext += " -footer 'wildshape - by vaguely_happy'" + "\n"
+		returntext += tf.moveInit(revertname) + "\n" # Will fail if the revert failed
+		returntext += tf.removeCbt(cbt, args) + "\n"  # Hence will also fail if the previous init move did not work
+		if setcbt != revertname:
+			returntext += tf.moveInit(setcbt) + "\n" # Put the init back where we want it
 	
 	else:
 		returntext = ctx.prefix + "echo could not find any wildshape to end for " + cbt.name + " or you need to set your character to revert to " + revertname
@@ -33,11 +48,28 @@ elif isend:
 else:
 	monster = arg1[0]
 	newname = tf.getMonstername(cbt, monster)
+	if c.current:
+		if c.current.name == cbt.name:
+			setcbt = newname
+		else:
+			setcbt = c.current.name
+	else:
+		returntext += ctx.prefix + "init madd commoner -p 100 -name 'Pre-combat transformation' -hp -5" + "\n"
+		setcbt = "Pre-combat transformation"
+	if setcbt != cbt.name:
+		returntext += tf.moveInit(cbt.name) + "\n"   # this will protect the current from a false deletion
+	
 	returntext += tf.genAddMonster(cbt, monster, args) + "\n"
-	returntext += ctx.prefix + "test {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.transferToWildshape(tf.getCombatantByName('" + cbt.name + "'), tf.getCombatantByName('" + newname + "'),[])}}{{'Setting up the wildshape'}}" + "\n"
-	if c.current.name == cbt.name:
-		returntext += tf.moveInit(newname) + "\n"
-	returntext += tf.removeCbt(cbt, args) + "\n"
+	returntext += ctx.prefix + "tembed -title '{{name}} Is wildshaping' "
+	returntext += " -desc  {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.messageText(tf.getCombatantByName('" + cbt.name + "'), tf.getCombatantByName('" + newname + "'),[])}} "
+	returntext += " -f {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.transferToWildshape(tf.getCombatantByName('"+ cbt.name +"'), tf.getCombatantByName('" + newname + "'),[])}}"
+	returntext += " -footer 'wildshape - by vaguely_happy'" + "\n"
+
+	returntext += tf.moveInit(newname) + "\n" # Will fail if the new combatant failed to add for any reason 
+	returntext += tf.removeCbt(cbt, args) + "\n"  # Hence will also fail if the previous init move did not work
+	if setcbt != newname:
+		returntext += tf.moveInit(setcbt) + "\n" # Put the init back where we want it
+
 
 	
 return returntext
