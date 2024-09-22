@@ -74,12 +74,20 @@ def genAddMonster(cbt, monster, args):
 	return commandstring
 	
 def transferToWildshape(cbt1, cbt2, args):
-	applyWildshape(cbt2, args)
-	transferEffects(cbt1, cbt2)
+	if cbt1 and cbt2:
+		applyWildshape(cbt2, args)
+		transferEffects(cbt1, cbt2)
+		return "'Wildshape|Transferring effects to wildshape'"
+	else:
+		return "Wildshape|Aborted"
 	
 def transferToPoly(cbt1, cbt2, args):
-	applyPoly(cbt1, cbt2, args)
-	transferEffects(cbt1, cbt2)
+	if cbt1 and cbt2:
+		applyPoly(cbt1, cbt2, args)
+		transferEffects(cbt1, cbt2)
+		return "'Polymorph|Transferring effects to polymorph'"
+	else:
+		return "Polymorph|Aborted"
 	
 	
 def applyPoly(cbt1, cbt2, args):
@@ -116,12 +124,20 @@ def applyWildshape(cbt,args):
 
 # Really only having different transferFrom methods as that is the design pattern and it might be more future proof. 
 def transferFromWildshape(cbt1, cbt2, args):
-	endTransform(cbt1, cbt2)
-	transferEffects(cbt1, cbt2)
+	if cbt1 and cbt2:
+		endTransform(cbt1, cbt2)
+		transferEffects(cbt1, cbt2)
+		return "'Wildshape|Transferring effects back'"
+	else:
+		return "Wildshape|Aborted"
 	
 def transferFromPoly(cbt1, cbt2, args):
-	endTransform(cbt1, cbt2)
-	transferEffects(cbt1, cbt2)
+	if cbt1 and cbt2:
+		endTransform(cbt1, cbt2)
+		transferEffects(cbt1, cbt2)
+		return "'Polymorph|Transferring effects back'"
+	else:
+		return "Polymorph|Aborted"
 
 # Generic end transform seems to be how they work but I have not looked at every spell yet. Might need more specific ones later
 def endTransform(cbt1, cbt2):
@@ -199,7 +215,16 @@ def transferEffects(cbt1, cbt2):
 			ch_cbt = getCombatantByName(child.combatant_name)
 			ch_cbt.remove_effect(child.name, strict = True)
 			ch_effect = ch_cbt.add_effect(name = child.name, duration = child.remaining, concentration = child.conc, parent = neweffect, desc=child.desc, passive_effects = passiveEffects(child), buttons=child.buttons, attacks=child.attacks)
-	
+
+def messageText(cbt1, cbt2, args):
+	returntext = ""
+	if cbt1 and cbt2:	
+		returntext += "'Transformation complete.\n\n"
+		returntext += cbt1.name + " has been transformed into " + cbt2.name + "'\n\n"
+	else:
+		returntext += "'Transformation has been cancelled or failed.\n\n"
+		returntext += "To avoid problems please respond with cancel - `c` - to the prompts that follow" + "'\n\n"
+	return returntext
 
 def getMetadata(cbt):
 	c = combat()
