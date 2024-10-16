@@ -76,7 +76,7 @@ def genAddMonster(cbt, monster, args):
 def transferToWildshape(cbt1, cbt2, args):
 	if cbt1 and cbt2:
 		applyWildshape(cbt2, args)
-		transferEffects(cbt1, cbt2)
+		transferPreserveAbi(cbt1, cbt2)
 		return "'Wildshape|Transferring effects to wildshape'"
 	else:
 		return "Wildshape|Aborted"
@@ -122,11 +122,11 @@ def applyWildshape(cbt,args):
 	else:
 		cbt.set_temp_hp(druidthp)
 
-# Really only having different transferFrom methods as that is the design pattern and it might be more future proof. 
+# Different transfers used to handle the fact that we adjust attacks for wildshape to allow for using un-adjusted monster blocks that have the wrong caster ability scores
 def transferFromWildshape(cbt1, cbt2, args):
 	if cbt1 and cbt2:
 		endTransform(cbt1, cbt2)
-		transferEffects(cbt1, cbt2)
+		transferPreserveAbi(cbt1, cbt2)
 		return "'Wildshape|Transferring effects back'"
 	else:
 		return "Wildshape|Aborted"
@@ -138,6 +138,13 @@ def transferFromPoly(cbt1, cbt2, args):
 		return "'Polymorph|Transferring effects back'"
 	else:
 		return "Polymorph|Aborted"
+		
+def transferAcross(cbt1, cbt2):
+	if cbt1 and cbt2:
+		endTransform(cbt1, cbt2)
+		transferEffects(cbt1, cbt2)
+	else:
+		return "Transfer aborted, could not find combatants"
 
 # Generic end transform seems to be how they work but I have not looked at every spell yet. Might need more specific ones later
 def endTransform(cbt1, cbt2):
@@ -210,11 +217,39 @@ def passiveEffects(effect):
 def transferEffects(cbt1, cbt2):
 	for effect in cbt1.effects:
 		children = effect.children
-		neweffect = cbt2.add_effect(name = effect.name, duration = effect.remaining, concentration = effect.conc, parent = effect.parent, desc=effect.desc, passive_effects = passiveEffects(effect), buttons=effect.buttons, attacks=effect.attacks)
+		try:
+			neweffect = cbt2.add_effect(name = effect.name, duration = effect.remaining, concentration = effect.conc, parent = effect.parent, desc=effect.desc, passive_effects = passiveEffects(effect), buttons=effect.buttons, attacks=effect.attacks)
+		except:
+			neweffect = cbt2.add_effect(name = effect.name, duration = effect.remaining, concentration = effect.conc, parent = effect.parent, desc=effect.desc, passive_effects = passiveEffects(effect), attacks=effect.attacks)
 		for child in children:
 			ch_cbt = getCombatantByName(child.combatant_name)
 			ch_cbt.remove_effect(child.name, strict = True)
 			ch_effect = ch_cbt.add_effect(name = child.name, duration = child.remaining, concentration = child.conc, parent = neweffect, desc=child.desc, passive_effects = passiveEffects(child), buttons=child.buttons, attacks=child.attacks)
+
+# Adjusts the ability scores on attacks to reflect that wildshape should preserve the mental ability scores and proficiency bonus.
+def transferPreserveAbi(cbt1, cbt2):
+	for effect in cbt1.effects:
+		children = effect.children
+		try:
+			neweffect = cbt2.add_effect(name = effect.name, duration = effect.remaining, concentration = effect.conc, parent = effect.parent, desc=effect.desc, passive_effects = passiveEffects(effect), buttons=effect.buttons, attacks=adjustAttack(effect.attacks))
+		except:
+			neweffect = cbt2.add_effect(name = effect.name, duration = effect.remaining, concentration = effect.conc, parent = effect.parent, desc=effect.desc, passive_effects = passiveEffects(effect), attacks=adjustAttack(effect.attacks))
+		for child in children:
+			ch_cbt = getCombatantByName(child.combatant_name)
+			ch_cbt.remove_effect(child.name, strict = True)
+			ch_effect = ch_cbt.add_effect(name = child.name, duration = child.remaining, concentration = child.conc, parent = neweffect, desc=child.desc, passive_effects = passiveEffects(child), buttons=child.buttons, attacks=child.attacks)
+
+def adjustAttack(attack):
+	subs = {
+	"intelligenceMod" : character().stats.get_mod("int"),
+	"wisdomMod" : character().stats.get_mod("wis"),
+	"charismaMod" : character().stats.get_mod("cha"),
+	"proficiencyBonus" : character().stats.prof_bonus
+	}
+	feature = dump_json(attack)
+	_ = [(feature:=feature.replace(f'{x}', str(subs[x]))) for x in ["intelligenceMod", "wisdomMod", "charismaMod", "proficiencyBonus"]]
+	attack = load_json(feature)
+	return attack
 
 def messageText(cbt1, cbt2, args):
 	returntext = ""
