@@ -6,7 +6,7 @@ name,args = get("name",""),argparse(a)
 arg1 = (&ARGS& + ["help"])[:1]
 isend, help = "end" in args, "help" in args or "help" in arg1
 c, cbt = combat(), None
-using(tf="92b005d9-e4e2-41fe-8ed8-0f0062adc668")
+using(tf="dd6ac3c1-f5b6-46a5-950e-b4e3b0ddbb34")
 if c:
 	cbt = tf.getCombatants(args)[0]
 	if not cbt and not help:
@@ -34,8 +34,8 @@ elif isend:
 	if revertname == character().name:
 		returntext += tf.resumeChar(cbt, args) + "\n"
 		returntext += ctx.prefix + "tembed -title '{{name}} Is wildshaping' "
-		returntext += " -desc  {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.messageText(tf.getCombatantByName('" + cbt.name + "'), tf.getCombatantByName('" + revertname + "'),[])}} "
-		returntext += " -f {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.transferFromWildshape(tf.getCombatantByName('"+ cbt.name +"'), combat().me,[])}} "
+		returntext += " -desc  {{using(tf='dd6ac3c1-f5b6-46a5-950e-b4e3b0ddbb34')}}{{tf.messageText(tf.getCombatantByName('" + cbt.name + "'), tf.getCombatantByName('" + revertname + "'),[])}} "
+		returntext += " -f {{using(tf='dd6ac3c1-f5b6-46a5-950e-b4e3b0ddbb34')}}{{tf.transferFromWildshape(tf.getCombatantByName('"+ cbt.name +"'), combat().me,[])}} "
 		returntext += " -footer 'wildshape - by vaguely_happy'" + "\n"
 		returntext += tf.moveInit(revertname) + "\n" # Will fail if the revert failed
 		returntext += tf.removeCbt(cbt, args) + "\n"  # Hence will also fail if the previous init move did not work
@@ -61,8 +61,8 @@ else:
 	
 	returntext += tf.genAddMonster(cbt, monster, args) + "\n"
 	returntext += ctx.prefix + "tembed -title '{{name}} Is wildshaping' "
-	returntext += " -desc  {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.messageText(tf.getCombatantByName('" + cbt.name + "'), tf.getCombatantByName('" + newname + "'),[])}} "
-	returntext += " -f {{using(tf='92b005d9-e4e2-41fe-8ed8-0f0062adc668')}}{{tf.transferToWildshape(tf.getCombatantByName('"+ cbt.name +"'), tf.getCombatantByName('" + newname + "'),[])}}"
+	returntext += " -desc  {{using(tf='dd6ac3c1-f5b6-46a5-950e-b4e3b0ddbb34')}}{{tf.messageText(tf.getCombatantByName('" + cbt.name + "'), tf.getCombatantByName('" + newname + "'),[])}} "
+	returntext += " -f {{using(tf='dd6ac3c1-f5b6-46a5-950e-b4e3b0ddbb34')}}{{tf.transferToWildshape(tf.getCombatantByName('"+ cbt.name +"'), tf.getCombatantByName('" + newname + "'),[])}}"
 	returntext += " -footer 'wildshape - by vaguely_happy'" + "\n"
 
 	returntext += tf.moveInit(newname) + "\n" # Will fail if the new combatant failed to add for any reason 
