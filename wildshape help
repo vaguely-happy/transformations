@@ -8,10 +8,25 @@ __Wildshape help and guidance__
 `{prefix}{alias} <beast>` -  replace your existing character in init with the named beast carrying across all effects, spells etc.
 `{prefix}{alias} end` - end the wildshape and place your character back in init with all effects spells etc
 
-{prefix}{alias} will recognise subclass set by the {prefix}level or {prefix}classinfo aliases (or by other means). For Moon Druids the benefits of Circle Forms will be applied automatically
+__Wildshape actions__
+
+Sometimes you are able to still use an action on your druid character sheet that is not present on the wildshape form, for example a Sea or Stars druid might activate their special abiities while in wildshape form. This can be done with
+
+`{prefix}{alias} action <action> [args]`
+
+Wildshape action will do some swapping things around to gain access to your character actions and apply them to the wildshape and will clean up after itself. Please let it finish its work
+
+__Wildshape beast spells__
+
+The Beast Spells feature is supported with the Wildshape cast option. Usually spells can simply be cast but if you wish to use a spell which enhances or buffs the caster you can use this option to cast the spell as if your wildshape
+
+`{prefix}{alias} cast <spell> [args]`
+
+Wildshape cast will do some swapping things around to gain access to your character spellbook and cast as if the wildshape and will clean up after itself. Please let it finish its work
+
 
 __Limitations__
 
 The beast that will be added to initiative is the standard beast stat block with hit points and temporary hit points amended as per the PHB 2024 rules. The mental abilities of the druid are not carried across due to limitations in Avrae.
 
-To have the exact rules stat block with mental ability scores you can set up and use a homebrew version of the beast using `https://bestiarybuilder.com/`
+To have the exact rules stat block with mental ability scores you can set up and use a homebrew version of the beast using the bestiary builder
