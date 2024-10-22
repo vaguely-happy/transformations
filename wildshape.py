@@ -4,8 +4,18 @@ returntext = ""
 a = &ARGS&
 name,args = get("name",""),argparse(a)
 arg1 = (&ARGS& + ["help"])[:1]
+cc = "Wild Shape"
 isend, help = "end" in args, "help" in args or "help" in arg1
-c, cbt = combat(), None
+c, cbt, ch = combat(), None, character()
+
+ignore = "i" in args
+if not ignore and not isend:
+	if not ch.cc_exists(cc):
+		return ctx.prefix + "echo Unable to find counter for " + cc
+	elif ch.cc(cc).value < 1:
+		return ctx.prefix + "echo No uses of " + cc + " remaining : " + ch.cc_str(cc)
+	
+
 using(tf="dd6ac3c1-f5b6-46a5-950e-b4e3b0ddbb34")
 if c:
 	cbt = tf.getCombatants(args)[0]
@@ -58,11 +68,12 @@ else:
 		setcbt = "Pre-combat transformation"
 	if setcbt != cbt.name:
 		returntext += tf.moveInit(cbt.name) + "\n"   # this will protect the current from a false deletion
-	
+	ch.mod_cc(cc, -1)
 	returntext += tf.genAddMonster(cbt, monster, args) + "\n"
 	returntext += ctx.prefix + "tembed -title '{{name}} Is wildshaping' "
 	returntext += " -desc  {{using(tf='dd6ac3c1-f5b6-46a5-950e-b4e3b0ddbb34')}}{{tf.messageText(tf.getCombatantByName('" + cbt.name + "'), tf.getCombatantByName('" + newname + "'),[])}} "
 	returntext += " -f {{using(tf='dd6ac3c1-f5b6-46a5-950e-b4e3b0ddbb34')}}{{tf.transferToWildshape(tf.getCombatantByName('"+ cbt.name +"'), tf.getCombatantByName('" + newname + "'),[])}}"
+	returntext += f''' -f "{cc} : {ch.cc_str(cc)}" '''
 	returntext += " -footer 'wildshape - by vaguely_happy'" + "\n"
 
 	returntext += tf.moveInit(newname) + "\n" # Will fail if the new combatant failed to add for any reason 
