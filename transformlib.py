@@ -215,28 +215,42 @@ def passiveEffects(effect):
 	
 	
 def transferEffects(cbt1, cbt2):
+	child_effects = []
 	for effect in cbt1.effects:
+		if effect in child_effects:
+			continue
 		children = effect.children
+		child_effects += children
 		try:
 			neweffect = cbt2.add_effect(name = effect.name, duration = effect.remaining, concentration = effect.conc, parent = effect.parent, desc=effect.desc, passive_effects = passiveEffects(effect), buttons=effect.buttons, attacks=effect.attacks)
 		except:
 			neweffect = cbt2.add_effect(name = effect.name, duration = effect.remaining, concentration = effect.conc, parent = effect.parent, desc=effect.desc, passive_effects = passiveEffects(effect), attacks=effect.attacks)
 		for child in children:
-			ch_cbt = getCombatantByName(child.combatant_name)
-			ch_cbt.remove_effect(child.name, strict = True)
+			if child.combatant_name == cbt1.name:
+				ch_cbt = cbt2
+			else:
+				ch_cbt = getCombatantByName(child.combatant_name)
+				ch_cbt.remove_effect(child.name, strict = True)
 			ch_effect = ch_cbt.add_effect(name = child.name, duration = child.remaining, concentration = child.conc, parent = neweffect, desc=child.desc, passive_effects = passiveEffects(child), buttons=child.buttons, attacks=child.attacks)
 
 # Adjusts the ability scores on attacks to reflect that wildshape should preserve the mental ability scores and proficiency bonus.
 def transferPreserveAbi(cbt1, cbt2):
+	child_effects = []
 	for effect in cbt1.effects:
+		if effect in child_effects:
+			continue
 		children = effect.children
+		child_effects += children
 		try:
 			neweffect = cbt2.add_effect(name = effect.name, duration = effect.remaining, concentration = effect.conc, parent = effect.parent, desc=effect.desc, passive_effects = passiveEffects(effect), buttons=effect.buttons, attacks=adjustAttack(effect.attacks))
 		except:
 			neweffect = cbt2.add_effect(name = effect.name, duration = effect.remaining, concentration = effect.conc, parent = effect.parent, desc=effect.desc, passive_effects = passiveEffects(effect), attacks=adjustAttack(effect.attacks))
 		for child in children:
-			ch_cbt = getCombatantByName(child.combatant_name)
-			ch_cbt.remove_effect(child.name, strict = True)
+			if child.combatant_name == cbt1.name:
+				ch_cbt = cbt2
+			else:
+				ch_cbt = getCombatantByName(child.combatant_name)
+				ch_cbt.remove_effect(child.name, strict = True)
 			ch_effect = ch_cbt.add_effect(name = child.name, duration = child.remaining, concentration = child.conc, parent = neweffect, desc=child.desc, passive_effects = passiveEffects(child), buttons=child.buttons, attacks=child.attacks)
 
 def adjustAttack(attack):
